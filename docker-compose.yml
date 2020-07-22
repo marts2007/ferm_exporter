@@ -1,0 +1,10 @@
+version: '2'
+services:
+  miner-exporter:
+    build:
+      context: ./
+    network_mode: host
+    volumes:
+      - ./fetcher:/app
+    container_name: fetcher
+    restart: always
