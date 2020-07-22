@@ -1,6 +1,7 @@
 import socket
 
 import json
+import requests
 from flask import Flask, escape, request
 
 app = Flask(__name__)
@@ -34,7 +35,32 @@ def claymore(hostname,port):
             metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=hashrates[gpu])
     return metrics
 
+@app.route('/gminer/<hostname>/<int:port>')
+def gminer(hostname,port):
+    HOST=escape(hostname)
+    PORT=port
+    data = requests.get("http://{}:{}/stat".format(HOST,PORT))
 
+    #with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    #    s.connect((HOST, PORT))
+    #    s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
+    #    data = s.recv(2048)
+
+    result = json.loads(data.text)
+    if 'devices' in result:
+        temps = []
+        fans = []
+        metrics = ''
+        power_usage = 0
+        #metrics='ferm_monitor_power_usage %s\n' % power_usage
+        #metrics=metrics+'ferm_monitor_power_usage2 %s\n' % power_usage2
+        devices = result['devices']
+        for device in devices:
+            power_usage = power_usage + device['power_usage']
+            metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpu_id'], temp=device['temperature'])
+            metrics = metrics+'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(id=device['gpu_id'], hashrate=device['speed'])
+        metrics = metrics+'ferm_monitor_power_usage %s\n' % power_usage
+    return metrics
 
 
 
