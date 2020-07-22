@@ -3,7 +3,6 @@ services:
   miner-exporter:
     build:
       context: ./
-    #image: fetcher
     network_mode: host
     volumes:
       - ./fetcher:/app
