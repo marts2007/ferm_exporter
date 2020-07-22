@@ -50,7 +50,7 @@ def gminer(hostname, port):
         for device in devices:
             power_usage = power_usage + device['power_usage']
             metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpu_id'], temp=device['temperature'])
-            metrics = metrics+'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(id=device['gpu_id'], hashrate=device['speed'])
+            metrics = metrics+'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(id=device['gpu_id'], hashrate=device['speed']/1000)
         metrics = metrics+'ferm_monitor_power_usage %s\n' % power_usage
     return metrics
 
