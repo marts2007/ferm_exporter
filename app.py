@@ -62,7 +62,6 @@ def nanominer(hostname, port):
         s.connect((HOST, PORT))
         s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
         data = s.recv(2048)
-
     result = json.loads(data)
     if 'result' in result:
         result = result['result']
@@ -82,7 +81,30 @@ def nanominer(hostname, port):
             metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu,temp=temps[gpu])
             metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=fans[gpu])
             metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=hashrates[gpu])
+        return metrics;
+
+
+@app.route('/teamredminer/<hostname>/<int:port>')
+def teamredminer(hostname,port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((hostname, port))
+        s.sendall(b'{"id":0,"jsonrpc":"2.0","command":"devs"}\n')
+        data = s.recv(2048)
+    result = json.loads(data)
+    if 'DEVS' in result:
+        devices = result['DEVS'];
+        temps = []
+        fans = []
+        metrics = ''
+        power_usage = 0
+        for device in devices:
+            metrics = metrics + 'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(
+                id=device['GPU'], temp=device['Temperature'])
+            metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(
+                id=device['GPU'], hashrate=device['KHS av'])
+        metrics = metrics + 'ferm_monitor_power_usage %s\n' % power_usage
     return metrics
+
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
