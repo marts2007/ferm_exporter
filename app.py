@@ -27,8 +27,9 @@ def claymore(hostname, port):
         for x in range(0, (len(t_arr) // 2)):
             temps.append(t_arr[x * 2])
             fans.append(t_arr[x * 2 + 1])
-        metrics = 'ferm_monitor_power_usage %s\n' % power_usage
-        metrics = metrics+'ferm_monitor_power_usage2 %s\n' % power_usage2
+        metrics = ''
+        #metrics = 'ferm_monitor_power_usage %s\n' % power_usage
+        #metrics = metrics+'ferm_monitor_power_usage2 %s\n' % power_usage2
         for gpu in range(0,len(temps)):
             metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu,temp=temps[gpu])
             metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=fans[gpu])
@@ -75,8 +76,9 @@ def nanominer(hostname, port):
         for x in range(0, (len(t_arr) // 2)):
             temps.append(t_arr[x * 2])
             fans.append(t_arr[x * 2 + 1])
-        metrics = 'ferm_monitor_power_usage %s\n' % power_usage
-        metrics = metrics+'ferm_monitor_power_usage2 %s\n' % power_usage2
+        metrics = ''
+        #metrics = 'ferm_monitor_power_usage %s\n' % power_usage
+        #metrics = metrics+'ferm_monitor_power_usage2 %s\n' % power_usage2
         for gpu in range(0,len(temps)):
             metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu,temp=temps[gpu])
             metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=fans[gpu])
