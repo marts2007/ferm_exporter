@@ -76,7 +76,7 @@ def nanominer(hostname, port):
         time.sleep(0.1)
         while True:
             try:
-              tmp=s.recv(1024)
+              tmp=s.recv(1)
               data.extend(tmp)
             except socket.error as e:
                 break
@@ -113,7 +113,7 @@ def teamredminer(hostname,port):
         time.sleep(0.1)
         while True:
             try:
-              tmp=s.recv(1024)
+              tmp=s.recv(1)
               data.extend(tmp)
             except socket.error as e:
               break
