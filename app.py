@@ -13,7 +13,13 @@ def claymore(hostname, port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
-        data = s.recv(2048)
+        data=bytearray()
+        while True:
+            tmp=s.recv(1024)
+            if not tmp:
+                break
+            data.extend(tmp)
+        #data = s.recv(2048)
 
     result = json.loads(data)
     if 'result' in result:
@@ -62,7 +68,13 @@ def nanominer(hostname, port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
-        data = s.recv(2048)
+        data=bytearray()
+        while True:
+            tmp=s.recv(1024)
+            if not tmp:
+                break
+            data.extend(tmp)
+        #data = s.recv(2048)
     result = json.loads(data)
     if 'result' in result:
         result = result['result']
@@ -91,7 +103,13 @@ def teamredminer(hostname,port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((hostname, port))
         s.sendall(b'{"id":0,"jsonrpc":"2.0","command":"devs"}\n')
-        data = s.recv(2048)
+        data=bytearray()
+        while True:
+            tmp=s.recv(1024)
+            if not tmp:
+                break
+            data.extend(tmp)
+        #data = s.recv(2048)
     result = json.loads(data)
     if 'DEVS' in result:
         devices = result['DEVS'];
