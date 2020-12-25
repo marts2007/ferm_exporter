@@ -21,6 +21,7 @@ def claymore(hostname, port):
         while True:
             try:
               tmp=s.recv(1)
+              if len(tmp)==0: break;
               data.extend(tmp)
             except socket.error as e:
                 break
@@ -77,6 +78,7 @@ def nanominer(hostname, port):
         while True:
             try:
               tmp=s.recv(1)
+              if len(tmp)==0: break;
               data.extend(tmp)
             except socket.error as e:
                 break
@@ -110,10 +112,11 @@ def teamredminer(hostname,port):
         fcntl.fcntl(s, fcntl.F_SETFL, os.O_NONBLOCK)
         s.sendall(b'{"id":0,"jsonrpc":"2.0","command":"devs"}\n')
         data=bytearray()
-        time.sleep(0.1)
+        time.sleep(1)
         while True:
             try:
               tmp=s.recv(1)
+              if len(tmp)==0: break;
               data.extend(tmp)
             except socket.error as e:
               break
