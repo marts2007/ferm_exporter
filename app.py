@@ -3,7 +3,7 @@ import socket
 import json
 import requests
 import fcntl, os
-
+import time
 from flask import Flask, escape, request
 
 app = Flask(__name__)
@@ -17,15 +17,13 @@ def claymore(hostname, port):
         fcntl.fcntl(s, fcntl.F_SETFL, os.O_NONBLOCK)
         s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
         data=bytearray()
+        time.sleep(0.1)
         while True:
             try:
-              tmp=s.recv(1024)
+              tmp=s.recv(1)
+              data.extend(tmp)
             except socket.error as e:
                 break
-            else:
-              data.extend(tmp)
-        #data = s.recv(2048)
-
     result = json.loads(data)
     if 'result' in result:
         result = result['result']
@@ -75,13 +73,13 @@ def nanominer(hostname, port):
         fcntl.fcntl(s, fcntl.F_SETFL, os.O_NONBLOCK)
         s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
         data=bytearray()
+        time.sleep(0.1)
         while True:
             try:
               tmp=s.recv(1024)
+              data.extend(tmp)
             except socket.error as e:
                 break
-            else:
-              data.extend(tmp)
     result = json.loads(data)
     if 'result' in result:
         result = result['result']
@@ -112,13 +110,13 @@ def teamredminer(hostname,port):
         fcntl.fcntl(s, fcntl.F_SETFL, os.O_NONBLOCK)
         s.sendall(b'{"id":0,"jsonrpc":"2.0","command":"devs"}\n')
         data=bytearray()
+        time.sleep(0.1)
         while True:
             try:
               tmp=s.recv(1024)
-            except socket.error as e:
-                break
-            else:
               data.extend(tmp)
+            except socket.error as e:
+              break
     result = json.loads(data)
     if 'DEVS' in result:
         devices = result['DEVS'];
