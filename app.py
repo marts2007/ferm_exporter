@@ -131,7 +131,7 @@ def teamredminer(hostname,port):
             metrics = metrics + 'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(
                 id=device['GPU'], temp=device['Temperature'])
             metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(
-                id=device['GPU'], hashrate=device['KHS av'])
+                id=device['GPU'], hashrate=device['KHS 30s'])
         metrics = metrics + 'ferm_monitor_power_usage %s\n' % power_usage
     return metrics
 
