@@ -105,6 +105,40 @@ def nanominer(hostname, port):
         return metrics;
 
 
+@app.route('/nanominerrvn/<hostname>/<int:port>')
+def nanominerrvn(hostname, port):
+    HOST = escape(hostname)
+    PORT = port
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        fcntl.fcntl(s, fcntl.F_SETFL, os.O_NONBLOCK)
+        s.sendall(b'{"id":0,"jsonrpc":"2.0","method":"miner_getstat2"}\n')
+        data=bytearray()
+        time.sleep(0.1)
+        while True:
+            try:
+              tmp=s.recv(1)
+              if len(tmp)==0: break;
+              data.extend(tmp)
+            except socket.error as e:
+                break
+    result = json.loads(data)
+    if 'result' in result:
+        result = result['result']
+        hashrates = (result[3]).split(';')
+        t_arr = result[6].split(';')
+        temps = []
+        fans = []
+        for x in range(0, (len(t_arr) // 2)):
+            temps.append(t_arr[x * 2])
+            fans.append(t_arr[x * 2 + 1])
+        metrics = ''
+        for gpu in range(0,len(temps)):
+            metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu,temp=temps[gpu])
+            metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=fans[gpu])
+            metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=(float(hashrates[gpu])/1000000))
+        return metrics;
+
 @app.route('/teamredminer/<hostname>/<int:port>')
 def teamredminer(hostname,port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
