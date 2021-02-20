@@ -136,7 +136,7 @@ def nanominerrvn(hostname, port):
         for gpu in range(0,len(temps)):
             metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu,temp=temps[gpu])
             metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=fans[gpu])
-            metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=(float(hashrates[gpu])/1000000))
+            metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=gpu, temp=(float(hashrates[gpu])/1000))
         return metrics;
 
 @app.route('/teamredminer/<hostname>/<int:port>')
