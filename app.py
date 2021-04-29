@@ -60,7 +60,7 @@ def gminer(hostname, port):
         devices = result['devices']
         for device in devices:
             power_usage = power_usage + device['power_usage']
-            metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpu_id'], temp=device['Temperature'])
+            metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpu_id'], temp=device['temperature'])
             metrics = metrics+'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(id=device['gpu_id'], hashrate=device['speed']/1000)
         metrics = metrics+'ferm_monitor_power_usage %s\n' % power_usage
     return metrics
@@ -163,7 +163,7 @@ def teamredminer(hostname,port):
         power_usage = 0
         for device in devices:
             metrics = metrics + 'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(
-                id=device['GPU'], temp=device['temperature'])
+                id=device['GPU'], temp=device['Temperature'])
             metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(
                 id=device['GPU'], hashrate=device['KHS 30s'])
         metrics = metrics + 'ferm_monitor_power_usage %s\n' % power_usage
@@ -193,4 +193,4 @@ def trex(hostname, port):
     return metrics
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0',port=5555)
