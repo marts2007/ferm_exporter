@@ -163,12 +163,34 @@ def teamredminer(hostname,port):
         power_usage = 0
         for device in devices:
             metrics = metrics + 'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(
-                id=device['GPU'], temp=device['Temperature'])
+                id=device['GPU'], temp=device['temperature'])
             metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(
                 id=device['GPU'], hashrate=device['KHS 30s'])
         metrics = metrics + 'ferm_monitor_power_usage %s\n' % power_usage
     return metrics
 
 
+
+@app.route('/trex/<hostname>/<int:port>')
+def trex(hostname, port):
+    HOST = escape(hostname)
+    PORT = port
+    data = requests.get("http://{}:{}/summary".format(HOST,PORT))
+    result = json.loads(data.text)
+    if 'gpus' in result:
+        temps = []
+        fans = []
+        metrics = ''
+        power_usage = 0
+        devices = result['gpus']
+        for device in devices:
+            power_usage = power_usage + device['power']
+            metrics = metrics+'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpu_id'], temp=device['temperature'])
+            metrics = metrics+'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(id=device['gpu_id'], hashrate=device['hashrate_minute']/1000)
+            metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpu_id'], temp=device['fan_speed'])
+            
+        metrics = metrics+'ferm_monitor_power_usage %s\n' % power_usage
+    return metrics
+
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0',port=5555)
