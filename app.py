@@ -192,5 +192,31 @@ def trex(hostname, port):
         metrics = metrics+'ferm_monitor_power_usage %s\n' % power_usage
     return metrics
 
+
+@app.route('/miniz/<hostname>/<int:port>')
+def miniz(hostname, port):
+    HOST = escape(hostname)
+    PORT = port
+    data = requests.get("http://{}:{}/miner_getstat".format(HOST, PORT))
+    result = json.loads(data.text)
+    if 'result' in result:
+        temps = []
+        fans = []
+        metrics = ''
+        power_usage = 0
+        devices = result['result']
+        for device in devices:
+            power_usage = power_usage + device['gpu_power_usage']
+            metrics = metrics + 'ferm_monitor_temp{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpuid'],
+                                                                                          temp=device['temperature'])
+            metrics = metrics + 'ferm_monitor_hashrate{sensor="gpu%(id)s"} %(hashrate)s\n' % dict(id=device['gpuid'],
+                                                                                                  hashrate=device[
+                                                                                                               'speed_sps'] )
+            metrics = metrics + 'ferm_monitor_fan{sensor="gpu%(id)s"} %(temp)s\n' % dict(id=device['gpuid'],
+                                                                                         temp=device['gpu_fan_speed'])
+
+        metrics = metrics + 'ferm_monitor_power_usage %s\n' % power_usage
+    return metrics
+
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=os.environ.get("API_PORT",5000))
