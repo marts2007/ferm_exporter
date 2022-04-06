@@ -6,6 +6,7 @@ import fcntl, os
 import time
 from flask import Flask, escape, request
 import socket
+import re
 
 app = Flask(__name__)
 
@@ -211,8 +212,11 @@ def miniz(hostname, port):
             break
         fragments+=(chunk.decode('UTF-8'))
     data = fragments
+    pattern = '{(.*)}'
+    data = re.findall(pattern, data)
     s.close
-    result = json.loads(data)
+    result = json.loads("{%s}" % data[0])
+
     if 'result' in result:
         temps = []
         fans = []
@@ -233,4 +237,4 @@ def miniz(hostname, port):
     return metrics
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=os.environ.get("API_PORT",5000))
+    app.run(debug=False, host='0.0.0.0', port=os.environ.get("API_PORT",5001))
