@@ -5,6 +5,7 @@ import requests
 import fcntl, os
 import time
 from flask import Flask, escape, request
+import socket
 
 app = Flask(__name__)
 
@@ -197,8 +198,21 @@ def trex(hostname, port):
 def miniz(hostname, port):
     HOST = escape(hostname)
     PORT = port
-    data = requests.get("http://{}:{}/miner_getstat".format(HOST, PORT))
-    result = json.loads(data.text)
+    PATH = '/miner_getstat'
+    #data = requests.get("http://{}:{}/miner_getstat".format(HOST, PORT))
+    #miniz below version 1.8* has http issue it return wrong status code
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
+    s.sendall("GET /miner_getstat HTTP/1.1\r\n\r\n".encode())
+    fragments = ''
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        fragments+=(chunk.decode('UTF-8'))
+    data = fragments
+    s.close
+    result = json.loads(data)
     if 'result' in result:
         temps = []
         fans = []
