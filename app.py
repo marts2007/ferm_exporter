@@ -262,4 +262,4 @@ def miniz(hostname, port):
     return metrics
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=os.environ.get("API_PORT",5001))
+    app.run(debug=False, host='0.0.0.0', port=os.environ.get("API_PORT",5000))
